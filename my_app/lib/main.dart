@@ -230,7 +230,13 @@ final GoRouter router = GoRouter(
     /// DETAILED REPORT
     GoRoute(
       path: '/detailed-report',
-      builder: (context, state) => const DetailedReportScreen(),
+      builder: (context, state) {
+        final foodData = state.extra is Map<String, dynamic>
+            ? state.extra as Map<String, dynamic>
+            : <String, dynamic>{};
+
+        return DetailedReportScreen(foodData: foodData);
+      },
     ),
 
     /// TYPE FOOD

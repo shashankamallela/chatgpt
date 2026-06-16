@@ -18,8 +18,7 @@ class DashboardScreen extends StatelessWidget {
       'description':
           'A cheerful animated brushing song that helps children remember to brush their teeth every day.',
       'tip': 'Brush in small circles for two minutes, twice a day.',
-      'file':
-          'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+      'file': 'https://www.youtube.com/watch?v=wCio_xVlgQ0',
       'icon': Icons.health_and_safety_outlined,
       'color': Colors.blue,
     },
@@ -33,8 +32,7 @@ class DashboardScreen extends StatelessWidget {
       'description':
           'A child-friendly science video explaining plaque, germs, and why brushing helps protect teeth from cavities.',
       'tip': 'After sweets, drink water and brush when it is brushing time.',
-      'file':
-          'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+      'file': 'https://www.youtube.com/watch?v=XbxsdbisXzU',
       'icon': Icons.bug_report_outlined,
       'color': Colors.green,
     },
@@ -48,8 +46,7 @@ class DashboardScreen extends StatelessWidget {
       'description':
           'A gentle animated video that helps children understand what happens at the dentist and feel less scared before a checkup.',
       'tip': 'A dentist visit is a tooth checkup, not something to fear.',
-      'file':
-          'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+      'file': 'https://www.youtube.com/watch?v=ntx1Nn5C4nI',
       'icon': Icons.sentiment_satisfied_alt,
       'color': Colors.orange,
     },
@@ -254,7 +251,7 @@ class _DashboardDrawer extends StatelessWidget {
             context,
             Icons.video_collection_outlined,
             "Kids Dental Videos",
-            "View 6 lessons",
+            "View 10 lessons",
             Colors.purple,
             '/videos-watched',
           ),

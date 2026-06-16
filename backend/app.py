@@ -7,13 +7,18 @@ from flask import Flask, jsonify, request, send_from_directory, url_for
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 
+from food_analysis import analyze_food, detect_food_hint
+
 app = Flask(__name__)
 CORS(app)
 
 DATABASE_PATH = Path(__file__).with_name('users.db')
 VIDEOS_JSON_PATH = Path(__file__).with_name('videos.json')
+STATIC_PATH = Path(__file__).with_name('static')
 UPLOADS_PATH = Path(__file__).with_name('uploads')
+VIDEO_FILES_PATH = STATIC_PATH / 'videos'
 ALLOWED_IMAGE_EXTENSIONS = {'jpg', 'jpeg', 'png', 'webp'}
+ALLOWED_VIDEO_EXTENSIONS = {'mp4', 'webm', 'mov'}
 
 
 def get_connection():
@@ -37,20 +42,53 @@ def seed_videos():
         return
 
     with get_connection() as connection:
-        connection.execute('DELETE FROM videos')
-        connection.executemany(
-            'INSERT INTO videos (id, title, description, file, thumbnail) VALUES (?, ?, ?, ?, ?)',
-            [
-                (
-                    video.get('id'),
-                    video.get('title'),
-                    video.get('description'),
-                    video.get('file'),
-                    video.get('thumbnail'),
+        for video in raw:
+            video_id = video.get('id')
+            title = video.get('title')
+            description = video.get('description')
+            file = video.get('file')
+            thumbnail = video.get('thumbnail')
+
+            existing_id = connection.execute(
+                'SELECT id, title FROM videos WHERE id = ?',
+                (video_id,),
+            ).fetchone()
+
+            if existing_id and existing_id['title'] == title:
+                connection.execute(
+                    '''
+                    UPDATE videos
+                    SET description = ?, file = ?, thumbnail = ?
+                    WHERE id = ?
+                    ''',
+                    (description, file, thumbnail, video_id),
                 )
-                for video in raw
-            ]
-        )
+                continue
+
+            existing_file = connection.execute(
+                'SELECT id FROM videos WHERE file = ?',
+                (file,),
+            ).fetchone()
+
+            if existing_file:
+                continue
+
+            if existing_id:
+                connection.execute(
+                    '''
+                    INSERT INTO videos (title, description, file, thumbnail)
+                    VALUES (?, ?, ?, ?)
+                    ''',
+                    (title, description, file, thumbnail),
+                )
+            else:
+                connection.execute(
+                    '''
+                    INSERT INTO videos (id, title, description, file, thumbnail)
+                    VALUES (?, ?, ?, ?, ?)
+                    ''',
+                    (video_id, title, description, file, thumbnail),
+                )
         connection.commit()
 
 
@@ -101,12 +139,20 @@ def init_database():
 init_database()
 seed_videos()
 UPLOADS_PATH.mkdir(exist_ok=True)
+VIDEO_FILES_PATH.mkdir(parents=True, exist_ok=True)
 
 
 def allowed_image(filename):
     return (
         '.' in filename
         and filename.rsplit('.', 1)[1].lower() in ALLOWED_IMAGE_EXTENSIONS
+    )
+
+
+def allowed_video(filename):
+    return (
+        '.' in filename
+        and filename.rsplit('.', 1)[1].lower() in ALLOWED_VIDEO_EXTENSIONS
     )
 
 
@@ -121,7 +167,21 @@ def save_uploaded_image(image_file):
     saved_path = UPLOADS_PATH / saved_name
     image_file.save(saved_path)
 
-    return saved_path, saved_name
+    return saved_path, saved_name, original_name
+
+
+def save_uploaded_video(video_file):
+    original_name = secure_filename(video_file.filename or 'video.mp4')
+
+    if not allowed_video(original_name):
+        raise ValueError('Only MP4, WEBM, and MOV videos are allowed')
+
+    extension = original_name.rsplit('.', 1)[1].lower()
+    saved_name = f'{uuid4().hex}.{extension}'
+    saved_path = VIDEO_FILES_PATH / saved_name
+    video_file.save(saved_path)
+
+    return saved_name
 
 
 @app.route('/', methods=['GET'])
@@ -137,6 +197,7 @@ def index():
             '/profile',
             '/predict',
             '/videos',
+            '/videos/upload',
         ],
     })
 
@@ -164,11 +225,17 @@ def get_videos_with_urls():
             else:
                 thumb_url = url_for('static', filename=thumb, _external=True)
 
+            video_file = row['file']
+            if video_file.startswith(('http://', 'https://')):
+                video_url = video_file
+            else:
+                video_url = url_for('static', filename=video_file, _external=True)
+
             videos.append({
                 'id': row['id'],
                 'title': row['title'],
                 'description': row['description'],
-                'file': row['file'],
+                'file': video_url,
                 'thumbnail': thumb_url
             })
 
@@ -441,30 +508,89 @@ def predict():
         if 'image' in request.files:
             from food_model import predict_food_image
 
-            saved_path, saved_name = save_uploaded_image(request.files['image'])
+            saved_path, saved_name, original_name = save_uploaded_image(
+                request.files['image']
+            )
             prediction = predict_food_image(saved_path)
-            food = prediction['food'].replace('_', ' ').title()
+            model_food = prediction.get('food', '').strip()
+            model_accuracy = float(prediction.get('model_accuracy') or 0)
+            confidence = float(prediction.get('confidence') or 0)
+            model_type = prediction.get('model_type')
+            filename_hint = detect_food_hint(original_name)
+            trust_model = (
+                model_accuracy >= 0.25 and confidence >= 0.30
+            ) or (
+                model_type == 'deep_learning' and confidence >= 0.80
+            )
+            has_model_guess = (
+                bool(model_food and model_food != 'unknown food')
+                and (
+                    model_type == 'deep_learning'
+                    or model_accuracy >= 0.10
+                    or confidence >= 0.05
+                )
+            )
+
+            if filename_hint:
+                analysis_food = filename_hint
+                image_prediction_source = 'filename'
+                needs_review = False
+                image_warning = ''
+            elif trust_model:
+                analysis_food = model_food
+                image_prediction_source = 'model'
+                needs_review = False
+                image_warning = ''
+            elif has_model_guess:
+                analysis_food = model_food
+                image_prediction_source = 'model_low_confidence'
+                needs_review = True
+                image_warning = (
+                    'Image identification confidence is low, so this is the closest '
+                    'food match. If it is wrong, type the food name to improve the '
+                    'risk analysis.'
+                )
+            else:
+                analysis_food = 'unknown food'
+                image_prediction_source = 'needs_review'
+                needs_review = True
+                image_warning = (
+                    'Image model confidence is too low for a reliable food name. '
+                    'Please type the food name for accurate analysis.'
+                )
+
+            food = analysis_food.replace('_', ' ').title()
+            analysis = analyze_food(analysis_food)
 
             return jsonify({
                 'food': food,
-                'confidence': prediction['confidence'],
+                'confidence': confidence,
+                'image_accuracy': round(confidence * 100),
                 'top_predictions': prediction['top_predictions'],
+                'model_accuracy': model_accuracy,
+                'model_type': model_type,
+                'raw_model_food': model_food.replace('_', ' ').title(),
+                'image_prediction_source': image_prediction_source,
+                'needs_review': needs_review,
+                'image_warning': image_warning,
                 'image': url_for('uploaded_file', filename=saved_name, _external=True),
-                'risk': 'Medium',
-                'sugar': 'High',
-                'acidity': 'Medium',
-                'score': 42
+                **analysis,
             })
 
         data = request.json or {}
-        food = data.get('food')
+        food = data.get('food', '').strip()
+
+        if not food:
+            return jsonify({
+                'success': False,
+                'message': 'Food is required'
+            }), 400
+
+        analysis = analyze_food(food)
 
         response = {
             'food': food,
-            'risk': 'Medium',
-            'sugar': 'High',
-            'acidity': 'Medium',
-            'score': 42
+            **analysis,
         }
 
         return jsonify(response)
@@ -492,6 +618,62 @@ def videos_list():
     except Exception as e:
         print('VIDEOS ERROR:', e)
         return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/videos/upload', methods=['POST'])
+def upload_video():
+    try:
+        if 'video' not in request.files:
+            return jsonify({
+                'success': False,
+                'message': 'Video file is required'
+            }), 400
+
+        title = request.form.get('title', '').strip()
+        description = request.form.get('description', '').strip()
+        thumbnail = request.form.get('thumbnail', 'thumbs/default.svg').strip()
+
+        if not title:
+            return jsonify({
+                'success': False,
+                'message': 'Title is required'
+            }), 400
+
+        saved_name = save_uploaded_video(request.files['video'])
+        video_path = f'videos/{saved_name}'
+
+        with get_connection() as connection:
+            cursor = connection.execute(
+                '''
+                INSERT INTO videos (title, description, file, thumbnail)
+                VALUES (?, ?, ?, ?)
+                ''',
+                (title, description, video_path, thumbnail),
+            )
+            connection.commit()
+
+        return jsonify({
+            'success': True,
+            'message': 'Video uploaded successfully',
+            'video': {
+                'id': cursor.lastrowid,
+                'title': title,
+                'description': description,
+                'file': url_for('static', filename=video_path, _external=True),
+                'thumbnail': url_for('static', filename=thumbnail, _external=True),
+            }
+        })
+    except ValueError as e:
+        return jsonify({
+            'success': False,
+            'message': str(e)
+        }), 400
+    except Exception as e:
+        print('UPLOAD VIDEO ERROR:', e)
+        return jsonify({
+            'success': False,
+            'message': str(e)
+        }), 500
 
 
 @app.route('/uploads/<path:filename>', methods=['GET'])

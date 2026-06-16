@@ -1,6 +1,7 @@
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
@@ -24,6 +25,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   bool isLiked = false;
   bool isVideoLoading = false;
+  bool isYoutubeVideo = false;
   String? videoError;
 
   @override
@@ -42,7 +44,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       return;
     }
 
+    if (_isYoutubeUrl(fileUrl)) {
+      setState(() {
+        isYoutubeVideo = true;
+        isVideoLoading = false;
+      });
+      return;
+    }
+
     setState(() {
+      isYoutubeVideo = false;
       isVideoLoading = true;
     });
 
@@ -122,6 +133,48 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     return '';
   }
 
+  bool _isYoutubeUrl(String url) {
+    final uri = Uri.tryParse(url);
+    final host = uri?.host.toLowerCase() ?? '';
+
+    return host == 'youtu.be' ||
+        host == 'www.youtube.com' ||
+        host == 'youtube.com' ||
+        host == 'm.youtube.com';
+  }
+
+  Future<void> _openVideoExternally() async {
+    final uri = Uri.tryParse(_videoUrl());
+
+    if (uri == null) {
+      _showMessage('Video link is invalid');
+      return;
+    }
+
+    try {
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (!launched) {
+        _showMessage('Could not open this video');
+      }
+    } catch (error) {
+      _showMessage(error.toString().replaceFirst('Exception: ', ''));
+    }
+  }
+
+  void _showMessage(String message) {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     chewieController?.dispose();
@@ -156,8 +209,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       );
     }
 
-    final controller = chewieController;
-    if (controller == null) {
+    if (isYoutubeVideo) {
+      return _buildYoutubeLauncher();
+    }
+
+    final chewie = chewieController;
+    if (chewie == null) {
       return const Icon(
         Icons.play_circle_outline,
         color: Colors.white,
@@ -166,7 +223,48 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     }
 
     return Chewie(
-      controller: controller,
+      controller: chewie,
+    );
+  }
+
+  Widget _buildYoutubeLauncher() {
+    return InkWell(
+      onTap: _openVideoExternally,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            height: 76,
+            width: 76,
+            decoration: BoxDecoration(
+              color: Colors.red,
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: const Icon(
+              Icons.play_arrow,
+              color: Colors.white,
+              size: 48,
+            ),
+          ),
+          const SizedBox(height: 18),
+          ElevatedButton.icon(
+            onPressed: _openVideoExternally,
+            icon: const Icon(Icons.open_in_new),
+            label: const Text('Open YouTube'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.black,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 12,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

@@ -3,42 +3,70 @@
     "id": 1,
     "title": "Brush Your Teeth Song for Kids",
     "description": "A short child-friendly brushing lesson for building a simple morning and night routine.",
-    "file": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    "file": "https://www.youtube.com/watch?v=wCio_xVlgQ0",
     "thumbnail": "thumbs/thumb1.svg"
   },
   {
     "id": 2,
     "title": "Why Do We Brush Our Teeth?",
     "description": "A simple lesson about plaque, germs, and how brushing protects teeth from cavities.",
-    "file": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+    "file": "https://www.youtube.com/watch?v=XbxsdbisXzU",
     "thumbnail": "thumbs/thumb2.svg"
   },
   {
     "id": 3,
     "title": "A Visit to the Dentist",
     "description": "A gentle guide to help children feel comfortable before a dental checkup.",
-    "file": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    "file": "https://www.youtube.com/watch?v=ntx1Nn5C4nI",
     "thumbnail": "thumbs/thumb3.svg"
   },
   {
     "id": 4,
     "title": "Healthy Snacks for Teeth",
     "description": "A quick lesson about choosing foods and drinks that are kinder to teeth.",
-    "file": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+    "file": "https://www.youtube.com/watch?v=CK2si5aFXek",
     "thumbnail": "thumbs/thumb4.svg"
   },
   {
     "id": 5,
     "title": "Two Minute Brush Timer",
     "description": "A timer-style video to help children brush long enough every day.",
-    "file": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+    "file": "https://www.youtube.com/watch?v=gAODutgIIVQ",
     "thumbnail": "thumbs/thumb5.svg"
   },
   {
     "id": 6,
     "title": "Flossing for Little Teeth",
     "description": "A simple introduction to flossing and cleaning between teeth.",
-    "file": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4",
+    "file": "https://www.youtube.com/watch?v=uqmNqu926iE",
+    "thumbnail": "thumbs/default.svg"
+  },
+  {
+    "id": 7,
+    "title": "Brushy Brush with Sesame Street",
+    "description": "A playful song that reminds kids to brush all around their teeth every morning and night.",
+    "file": "https://www.youtube.com/watch?v=wxMrtK-kYnE",
+    "thumbnail": "thumbs/default.svg"
+  },
+  {
+    "id": 8,
+    "title": "How to Brush Your Teeth Properly",
+    "description": "A clear kids brushing guide that shows simple steps for cleaning teeth, gums, and tongue.",
+    "file": "https://www.youtube.com/watch?v=hDZXSMU2lAk",
+    "thumbnail": "thumbs/default.svg"
+  },
+  {
+    "id": 9,
+    "title": "Floss Teeth for Kids Under Age 5",
+    "description": "A parent-friendly flossing guide for helping younger children clean between little teeth.",
+    "file": "https://www.youtube.com/watch?v=rCUr55158ow",
+    "thumbnail": "thumbs/default.svg"
+  },
+  {
+    "id": 10,
+    "title": "Care for Teeth Ages 3 to 6",
+    "description": "A friendly oral care lesson for children aged 3 to 6, covering brushing and healthy tooth habits.",
+    "file": "https://www.youtube.com/watch?v=lQE4xxk1r5g",
     "thumbnail": "thumbs/default.svg"
   }
 ]
