@@ -60,11 +60,15 @@ jobs:
           cache: true
           
       - name: Install Flutter Dependencies
-        run: flutter pub get
+        run: |
+          cd my_app
+          flutter pub get
         
       - name: Build Flutter Web App
         # The base-href must match the repository name exactly for GitHub Pages to resolve assets correctly
-        run: flutter build web --release --base-href /chatgpt/
+        run: |
+          cd my_app
+          flutter build web --release --base-href /chatgpt/
         
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v4
@@ -72,7 +76,7 @@ jobs:
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'build/web'
+          path: 'my_app/build/web'
           
       - name: Deploy to GitHub Pages
         id: deployment
