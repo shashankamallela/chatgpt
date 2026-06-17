@@ -30,7 +30,7 @@ class ApiService {
     }
 
     if (kIsWeb) {
-      return ['http://localhost:5000'];
+      return ['https://chatgpt-owkm.onrender.com'];
     }
 
     if (defaultTargetPlatform == TargetPlatform.android) {
