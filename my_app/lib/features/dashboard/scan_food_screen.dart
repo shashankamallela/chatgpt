@@ -74,8 +74,9 @@ class _ScanFoodScreenState extends State<ScanFoodScreen> {
 
     try {
       final XFile image = await controller.takePicture();
+      final bytes = await image.readAsBytes();
       final Map<String, dynamic> result =
-          await ApiService.predictFoodImage(image.path);
+          await ApiService.predictFoodImage(bytes, image.name);
 
       if (!mounted) return;
 
@@ -121,8 +122,9 @@ class _ScanFoodScreenState extends State<ScanFoodScreen> {
         return;
       }
 
+      final bytes = await image.readAsBytes();
       final Map<String, dynamic> result =
-          await ApiService.predictFoodImage(image.path);
+          await ApiService.predictFoodImage(bytes, image.name);
 
       if (!mounted) return;
 

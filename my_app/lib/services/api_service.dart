@@ -140,7 +140,8 @@ class ApiService {
   }
 
   static Future<http.Response> _sendMultipartWithFallback(
-    String imagePath,
+    Uint8List bytes,
+    String filename,
   ) async {
     Object? lastConnectionError;
 
@@ -152,9 +153,10 @@ class ApiService {
         );
 
         request.files.add(
-          await http.MultipartFile.fromPath(
+          http.MultipartFile.fromBytes(
             'image',
-            imagePath,
+            bytes,
+            filename: filename,
           ),
         );
 
@@ -341,10 +343,11 @@ class ApiService {
   }
 
   static Future<Map<String, dynamic>> predictFoodImage(
-    String imagePath,
+    Uint8List bytes,
+    String filename,
   ) async {
     try {
-      final response = await _sendMultipartWithFallback(imagePath);
+      final response = await _sendMultipartWithFallback(bytes, filename);
       return _decodeJsonResponse(response);
     } on FormatException {
       throw Exception('Server returned an invalid response');
