@@ -74,8 +74,8 @@ excel_file = "load_test_results.xlsx"
 df_summary = pd.DataFrame([summary])
 
 with pd.ExcelWriter(excel_file) as writer:
-    df_summary.to_excel(writer, sheet_name="Summary", index=False)
     if not df.empty:
-        df.head(100).to_excel(writer, sheet_name="Raw_Data_Sample", index=False)
+        df.to_excel(writer, sheet_name="All_Requests", index=False)
+    df_summary.to_excel(writer, sheet_name="Summary", index=False)
 
 print(f"Results saved to {excel_file}")
