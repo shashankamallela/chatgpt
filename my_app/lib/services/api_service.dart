@@ -161,7 +161,7 @@ class ApiService {
         );
 
         final streamedResponse = await request.send().timeout(
-              const Duration(seconds: 20),
+              const Duration(seconds: 120),
             );
 
         return http.Response.fromStream(streamedResponse);
