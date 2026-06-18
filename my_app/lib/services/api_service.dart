@@ -29,19 +29,8 @@ class ApiService {
       return [_configuredBaseUrl];
     }
 
-    if (kIsWeb) {
-      return ['https://chatgpt-owkm.onrender.com'];
-    }
-
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return [_androidEmulatorBaseUrl, _lanBaseUrl];
-    }
-
-    if (defaultTargetPlatform == TargetPlatform.iOS) {
-      return [_localBaseUrl, _lanBaseUrl];
-    }
-
-    return [_localBaseUrl];
+    // Force all platforms (Web, Android, iOS) to use the live Render backend
+    return ['https://chatgpt-owkm.onrender.com'];
   }
 
   static String get _connectionErrorMessage {
