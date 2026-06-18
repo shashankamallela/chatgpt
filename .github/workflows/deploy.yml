@@ -43,6 +43,42 @@ jobs:
           cd backend
           pytest tests/
 
+  load-test-backend:
+    name: Run Backend Load Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          
+      - name: Install Python Dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
+          
+      - name: Run Backend in Background
+        run: |
+          cd backend
+          python app.py &
+          sleep 5
+          
+      - name: Run Load Test (100 Users, 1 Minute)
+        run: |
+          cd backend
+          python load_test.py
+          
+      - name: Upload Excel Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: load-test-results
+          path: backend/load_test_results.xlsx
+
   build-and-deploy-frontend:
     name: Build & Deploy Flutter Web
     needs: test-backend
