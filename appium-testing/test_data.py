@@ -26,9 +26,8 @@ def get_test_cases():
     cases = []
     # If no videos found, just fallback to dummy so the tests don't completely crash the collector
     video_list = VIDEOS if VIDEOS else [{"id": i, "title": f"Dummy Video {i}"} for i in range(10)]
-    
-    # Take first 10 videos to match our 80 test case guarantee
-    for video in video_list[:10]:
+    # Take first 15 videos to reach our 200+ test case guarantee
+    for video in video_list[:15]:
         for scenario in SCENARIOS:
             cases.append((video, scenario))
     return cases

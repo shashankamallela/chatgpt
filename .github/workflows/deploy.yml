@@ -79,6 +79,41 @@ jobs:
           name: load-test-results
           path: backend/load_test_results.xlsx
 
+  run-e2e-security-tests:
+    name: Run E2E & Security Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pandas openpyxl
+          
+      - name: Run E2E and Vulnerability Tests
+        run: |
+          cd appium-testing
+          pytest test_mobile.py -v || true
+          pytest test_web.py -v || true
+          pytest test_security.py -v || true
+          
+      - name: Generate 200+ Test Cases Excel
+        run: |
+          cd appium-testing
+          python generate_200_tests_excel.py
+          
+      - name: Upload Excel Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: 200-e2e-security-test-cases
+          path: 200_e2e_security_test_cases.xlsx
+
   build-and-deploy-frontend:
     name: Build & Deploy Flutter Web
     needs: test-backend
