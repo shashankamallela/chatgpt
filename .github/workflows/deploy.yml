@@ -109,11 +109,17 @@ jobs:
           cd appium-testing
           python generate_test_excels.py
           
-      - name: Upload Frontend Test Artifact
+      - name: Upload Appium Test Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: 300-frontend-test-cases
-          path: 300_frontend_test_cases.xlsx
+          name: 300-appium-test-cases
+          path: 300_appium_test_cases.xlsx
+
+      - name: Upload Selenium Test Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: 300-selenium-test-cases
+          path: 300_selenium_test_cases.xlsx
 
       - name: Upload Backend Test Artifact
         uses: actions/upload-artifact@v4
