@@ -7,8 +7,8 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from test_data import FRONTEND_TEST_CASES, BACKEND_TEST_CASES
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-frontend_excel = os.path.join(base_dir, "200_frontend_test_cases.xlsx")
-backend_excel = os.path.join(base_dir, "200_backend_vulnerability_test_cases.xlsx")
+frontend_excel = os.path.join(base_dir, "300_frontend_test_cases.xlsx")
+backend_excel = os.path.join(base_dir, "300_backend_vulnerability_test_cases.xlsx")
 
 # Generate 200 Frontend tests (100 Appium + 100 Selenium)
 frontend_rows = []

@@ -112,14 +112,14 @@ jobs:
       - name: Upload Frontend Test Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: 200-frontend-test-cases
-          path: 200_frontend_test_cases.xlsx
+          name: 300-frontend-test-cases
+          path: 300_frontend_test_cases.xlsx
 
       - name: Upload Backend Test Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: 200-backend-vulnerability-test-cases
-          path: 200_backend_vulnerability_test_cases.xlsx
+          name: 300-backend-vulnerability-test-cases
+          path: 300_backend_vulnerability_test_cases.xlsx
 
   build-and-deploy-frontend:
     name: Build & Deploy Flutter Web
