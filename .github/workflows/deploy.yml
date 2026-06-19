@@ -104,16 +104,16 @@ jobs:
           pytest test_web.py -v || true
           pytest test_security.py -v || true
           
-      - name: Generate 200+ Test Cases Excel
+      - name: Generate 400+ Test Cases Excel
         run: |
           cd appium-testing
-          python generate_200_tests_excel.py
+          python generate_400_tests_excel.py
           
       - name: Upload Excel Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: 200-e2e-security-test-cases
-          path: 200_e2e_security_test_cases.xlsx
+          name: 400-e2e-security-test-cases
+          path: 400_e2e_security_test_cases.xlsx
 
   build-and-deploy-frontend:
     name: Build & Deploy Flutter Web

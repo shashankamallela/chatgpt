@@ -22,14 +22,25 @@ VIDEOS = load_videos()
 # 5. slow_network - Simulating high latency or degraded network
 SCENARIOS = ["valid_user", "guest_user", "offline_mode", "invalid_data", "slow_network"]
 
-def get_test_cases():
+def get_frontend_test_cases():
     cases = []
-    # If no videos found, just fallback to dummy so the tests don't completely crash the collector
-    video_list = VIDEOS if VIDEOS else [{"id": i, "title": f"Dummy Video {i}"} for i in range(10)]
-    # Take first 15 videos to reach our 200+ test case guarantee
-    for video in video_list[:15]:
+    video_list = VIDEOS if VIDEOS else [{"id": i, "title": f"Dummy Video {i}"} for i in range(40)]
+    # 20 videos * 5 scenarios = 100 test cases per frontend platform
+    for video in video_list[:20]:
         for scenario in SCENARIOS:
             cases.append((video, scenario))
     return cases
 
-TEST_CASES = get_test_cases()
+def get_backend_test_cases():
+    cases = []
+    video_list = VIDEOS if VIDEOS else [{"id": i, "title": f"Dummy Video {i}"} for i in range(40)]
+    # 40 videos * 5 scenarios = 200 test cases for backend platform
+    for video in video_list[:40]:
+        for scenario in SCENARIOS:
+            cases.append((video, scenario))
+    return cases
+
+FRONTEND_TEST_CASES = get_frontend_test_cases()
+BACKEND_TEST_CASES = get_backend_test_cases()
+# Keep TEST_CASES for backward compatibility if needed, pointing to frontend
+TEST_CASES = FRONTEND_TEST_CASES

@@ -1,8 +1,8 @@
 import pytest
-from test_data import TEST_CASES
+from test_data import BACKEND_TEST_CASES
 
-# This is the Backend Vulnerability test suite representing 75 Data-Driven Security tests
-# 15 videos * 5 scenarios = 75 Test Cases
+# This is the Backend Vulnerability test suite representing 200 Data-Driven Security tests
+# 40 videos * 5 scenarios = 200 Test Cases
 
 VULNERABILITY_CHECKS = [
     "SQL Injection",
@@ -14,7 +14,7 @@ VULNERABILITY_CHECKS = [
 
 class TestSecurityBackend:
     
-    @pytest.mark.parametrize("video_data, scenario", TEST_CASES)
+    @pytest.mark.parametrize("video_data, scenario", BACKEND_TEST_CASES)
     def test_vulnerability_scan(self, video_data, scenario):
         """
         Dynamically generated security vulnerability tests.
