@@ -7,16 +7,16 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from test_data import FRONTEND_TEST_CASES, BACKEND_TEST_CASES
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-output_excel = os.path.join(base_dir, "400_e2e_security_test_cases.xlsx")
-
-rows = []
-test_id = 1
+frontend_excel = os.path.join(base_dir, "200_frontend_test_cases.xlsx")
+backend_excel = os.path.join(base_dir, "200_backend_vulnerability_test_cases.xlsx")
 
 # Generate 200 Frontend tests (100 Appium + 100 Selenium)
+frontend_rows = []
+test_id = 1
 for platform in ["Mobile (Appium)", "Web (Selenium)"]:
     for video_data, scenario in FRONTEND_TEST_CASES:
-        rows.append({
-            "Test ID": f"TEST-{test_id:03d}",
+        frontend_rows.append({
+            "Test ID": f"FE-{test_id:03d}",
             "Platform": platform,
             "Scenario": scenario,
             "Video ID": video_data.get("id"),
@@ -26,11 +26,17 @@ for platform in ["Mobile (Appium)", "Web (Selenium)"]:
         })
         test_id += 1
 
+df_frontend = pd.DataFrame(frontend_rows)
+df_frontend.to_excel(frontend_excel, index=False)
+print(f"Successfully generated {len(frontend_rows)} frontend test cases to {frontend_excel}")
+
 # Generate 200 Backend Vulnerability tests
+backend_rows = []
+test_id = 1
 for platform in ["Backend (Vulnerability)"]:
     for video_data, scenario in BACKEND_TEST_CASES:
-        rows.append({
-            "Test ID": f"TEST-{test_id:03d}",
+        backend_rows.append({
+            "Test ID": f"BE-SEC-{test_id:03d}",
             "Platform": platform,
             "Scenario": scenario,
             "Video ID": video_data.get("id"),
@@ -40,7 +46,6 @@ for platform in ["Backend (Vulnerability)"]:
         })
         test_id += 1
 
-df = pd.DataFrame(rows)
-df.to_excel(output_excel, index=False)
-
-print(f"Successfully generated {len(rows)} test cases to {output_excel}")
+df_backend = pd.DataFrame(backend_rows)
+df_backend.to_excel(backend_excel, index=False)
+print(f"Successfully generated {len(backend_rows)} backend test cases to {backend_excel}")
