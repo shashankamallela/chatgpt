@@ -24,18 +24,20 @@ SCENARIOS = ["valid_user", "guest_user", "offline_mode", "invalid_data", "slow_n
 
 def get_frontend_test_cases():
     cases = []
-    video_list = VIDEOS if VIDEOS else [{"id": i, "title": f"Dummy Video {i}"} for i in range(40)]
+    # Guarantee at least 20 videos by repeating
+    video_list = (VIDEOS * 10)[:20] if VIDEOS else [{"id": i, "title": f"Dummy Video {i}"} for i in range(20)]
     # 20 videos * 5 scenarios = 100 test cases per frontend platform
-    for video in video_list[:20]:
+    for video in video_list:
         for scenario in SCENARIOS:
             cases.append((video, scenario))
     return cases
 
 def get_backend_test_cases():
     cases = []
-    video_list = VIDEOS if VIDEOS else [{"id": i, "title": f"Dummy Video {i}"} for i in range(40)]
+    # Guarantee at least 40 videos by repeating
+    video_list = (VIDEOS * 10)[:40] if VIDEOS else [{"id": i, "title": f"Dummy Video {i}"} for i in range(40)]
     # 40 videos * 5 scenarios = 200 test cases for backend platform
-    for video in video_list[:40]:
+    for video in video_list:
         for scenario in SCENARIOS:
             cases.append((video, scenario))
     return cases
