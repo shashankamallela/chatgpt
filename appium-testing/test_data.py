@@ -2,7 +2,7 @@ import json
 import os
 
 # Load the videos data
-BASE_DIR = r"d:\chatgpt"
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INPUT_JSON = os.path.join(BASE_DIR, "automated testing", "input.json")
 
 def load_videos():

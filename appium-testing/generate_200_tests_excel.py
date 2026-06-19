@@ -6,7 +6,7 @@ import pandas as pd
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from test_data import TEST_CASES
 
-base_dir = r"d:\chatgpt"
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 output_excel = os.path.join(base_dir, "200_e2e_security_test_cases.xlsx")
 
 rows = []
