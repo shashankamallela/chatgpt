@@ -107,6 +107,19 @@ class RiskAnalysisScreen extends StatelessWidget {
                         fontSize: 18,
                       ),
                     ),
+                    const SizedBox(height: 20),
+                    if (foodData['imageBytes'] != null)
+                      Center(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.memory(
+                            foodData['imageBytes'],
+                            height: 180,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
                     const SizedBox(height: 30),
                   ],
                 ),

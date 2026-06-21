@@ -80,13 +80,22 @@ class FoodDetectedScreen extends StatelessWidget {
                                 25,
                               ),
                             ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.restaurant,
-                                size: 100,
-                                color: Colors.deepPurple,
-                              ),
-                            ),
+                            child: foodData['imageBytes'] != null
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(25),
+                                    child: Image.memory(
+                                      foodData['imageBytes'],
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                    ),
+                                  )
+                                : const Center(
+                                    child: Icon(
+                                      Icons.restaurant,
+                                      size: 100,
+                                      color: Colors.deepPurple,
+                                    ),
+                                  ),
                           ),
                           const SizedBox(height: 30),
                           Text(

@@ -80,6 +80,8 @@ class _ScanFoodScreenState extends State<ScanFoodScreen> {
 
       if (!mounted) return;
 
+      result['imageBytes'] = bytes; // Add the captured image bytes for the next screen to display
+
       context.push(
         '/food-detected',
         extra: result,
@@ -127,6 +129,8 @@ class _ScanFoodScreenState extends State<ScanFoodScreen> {
           await ApiService.predictFoodImage(bytes, image.name);
 
       if (!mounted) return;
+
+      result['imageBytes'] = bytes; // Add the uploaded image bytes for the next screen to display
 
       context.push(
         '/food-detected',

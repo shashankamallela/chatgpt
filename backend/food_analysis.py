@@ -53,7 +53,7 @@ KEYWORD_FOOD_DATA = [
             'cake', 'pie', 'baklava', 'beignet', 'pudding', 'cannoli',
             'cheesecake', 'mousse', 'churro', 'brulee', 'cup cake',
             'cupcake', 'donut', 'macaron', 'ice cream', 'panna cotta',
-            'shortcake', 'tiramisu', 'waffle', 'pancake', 'toast'
+            'shortcake', 'tiramisu', 'waffle', 'pancake', 'toast', 'macarons'
         ),
         profile(VERY_HIGH, MEDIUM, HIGH, HIGH, LOW, 'Sweet desserts raise cavity risk because they are sugary and often sticky.', fat=HIGH),
     ),
@@ -61,7 +61,8 @@ KEYWORD_FOOD_DATA = [
         (
             'fries', 'onion ring', 'garlic bread', 'bread', 'sandwich',
             'burger', 'hamburger', 'hot dog', 'pizza', 'nacho', 'taco',
-            'quesadilla', 'burrito', 'poutine'
+            'quesadilla', 'burrito', 'poutine', 'bruschetta', 'croque', 
+            'club', 'nachos', 'tacos'
         ),
         profile(MEDIUM, MEDIUM, HIGH, HIGH, LOW, 'Refined starches can stick to teeth and feed plaque bacteria.', fat=HIGH),
     ),
@@ -69,35 +70,39 @@ KEYWORD_FOOD_DATA = [
         (
             'rice', 'risotto', 'paella', 'bibimbap', 'dumpling', 'gyoza',
             'dumplings', 'pad thai', 'ramen', 'ravioli', 'gnocchi', 'lasagna',
-            'spaghetti', 'macaroni', 'samosa', 'spring roll'
+            'spaghetti', 'macaroni', 'samosa', 'spring roll', 'takoyaki', 'pho',
+            'grits'
         ),
         profile(LOW, LOW, HIGH, HIGH, LOW, 'Starchy meals are moderate risk, especially if they cling between teeth.', fat=MEDIUM),
     ),
     (
         (
             'salad', 'edamame', 'hummus', 'guacamole', 'omelette',
-            'deviled egg', 'miso soup', 'seaweed'
+            'deviled egg', 'miso soup', 'seaweed', 'caprese', 'caesar',
+            'greek', 'beet', 'eggs', 'huevos'
         ),
         profile(LOW, LOW, LOW, LOW, VERY_HIGH, 'Vegetables, protein, and mineral-rich foods are generally tooth-friendly.'),
     ),
     (
         (
             'salmon', 'sashimi', 'sushi', 'tuna', 'scallop', 'oyster',
-            'mussel', 'crab', 'lobster', 'shrimp', 'fish'
+            'mussel', 'crab', 'lobster', 'shrimp', 'fish', 'clam',
+            'chowder', 'ceviche', 'scallops', 'oysters', 'mussels', 'calamari'
         ),
         profile(LOW, MEDIUM, LOW, LOW, HIGH, 'Seafood is low in sugar; sauces or rice can add some oral-health risk.', fat=LOW),
     ),
     (
         (
             'steak', 'rib', 'pork', 'beef', 'chicken', 'duck', 'filet',
-            'carpaccio', 'tartare', 'wings'
+            'carpaccio', 'tartare', 'wings', 'ribs', 'mignon', 'foie', 'gras',
+            'escargots', 'chop', 'curry'
         ),
         profile(LOW, LOW, MEDIUM, LOW, HIGH, 'Protein foods are low in sugar, but sticky sauces can increase risk.', fat=HIGH),
     ),
     (
         (
             'ceviche', 'hot and sour', 'tomato', 'pickle', 'vinegar',
-            'orange', 'lemon', 'lime'
+            'orange', 'lemon', 'lime', 'onion', 'soup', 'bisque'
         ),
         profile(MEDIUM, VERY_HIGH, LOW, LOW, MEDIUM, 'Acidic foods can soften enamel temporarily.'),
     ),
