@@ -125,11 +125,12 @@ class _OtpScreenState extends State<OtpScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               IconButton(
                 onPressed: isLoading
                     ? null
@@ -207,7 +208,8 @@ class _OtpScreenState extends State<OtpScreen> {
                         ),
                 ),
               ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

@@ -51,14 +51,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       backgroundColor: Colors.white,
 
       body: SafeArea(
-
-        child: Padding(
-
-          padding: const EdgeInsets.all(24),
-
-          child: Column(
-
-            children: [
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight,
+                ),
+                child: IntrinsicHeight(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      children: [
 
               Align(
 
@@ -254,9 +258,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
 
               const SizedBox(height: 25),
-
-            ],
-          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

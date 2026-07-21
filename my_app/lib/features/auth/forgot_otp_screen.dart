@@ -88,11 +88,12 @@ class _ForgotOtpScreenState extends State<ForgotOtpScreen> {
         ),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               const SizedBox(height: 20),
               Container(
                 height: 110,
@@ -173,6 +174,7 @@ class _ForgotOtpScreenState extends State<ForgotOtpScreen> {
                 ),
               ),
             ],
+            ),
           ),
         ),
       ),
