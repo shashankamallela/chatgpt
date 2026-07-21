@@ -88,10 +88,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
 
-              Expanded(
-
+              SizedBox(
+                height: 500,
                 child: PageView.builder(
-
                   controller: _pageController,
 
                   itemCount: onboardingData.length,
