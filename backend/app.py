@@ -249,7 +249,7 @@ def signup():
         data = request.json or {}
 
         name = data.get('name', '').strip()
-        email = data.get('email', '').strip()
+        email = data.get('email', '').strip().lower()
         password = data.get('password', '')
 
         if not name or not email or not password:
@@ -298,7 +298,7 @@ def login():
     try:
         data = request.json or {}
 
-        email = data.get('email', '').strip()
+        email = data.get('email', '').strip().lower()
         password = data.get('password', '')
 
         with get_connection() as connection:
