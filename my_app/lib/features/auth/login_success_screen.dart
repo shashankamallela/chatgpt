@@ -147,6 +147,7 @@ class LoginSuccessScreen extends StatelessWidget {
               ),
             ],
           ),
+          ),
         ),
       ),
     );

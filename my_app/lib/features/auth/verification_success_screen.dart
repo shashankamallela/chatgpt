@@ -132,6 +132,7 @@ class VerificationSuccessScreen extends StatelessWidget {
 
             ],
           ),
+          ),
         ),
       ),
     );
