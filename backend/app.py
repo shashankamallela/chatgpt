@@ -21,7 +21,41 @@ ALLOWED_IMAGE_EXTENSIONS = {'jpg', 'jpeg', 'png', 'webp'}
 ALLOWED_VIDEO_EXTENSIONS = {'mp4', 'webm', 'mov'}
 
 
+import os
+
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if DATABASE_URL:
+    import psycopg2
+    from psycopg2.extras import DictCursor
+
+class PostgresWrapper:
+    def __init__(self, conn):
+        self.conn = conn
+    
+    def execute(self, query, params=None):
+        cursor = self.conn.cursor(cursor_factory=DictCursor)
+        query = query.replace('?', '%s')
+        query = query.replace('INTEGER PRIMARY KEY AUTOINCREMENT', 'SERIAL PRIMARY KEY')
+        cursor.execute(query, params or ())
+        return cursor
+        
+    def commit(self):
+        self.conn.commit()
+        
+    def __enter__(self):
+        return self
+        
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type is None:
+            self.commit()
+        else:
+            self.conn.rollback()
+
 def get_connection():
+    if DATABASE_URL:
+        conn = psycopg2.connect(DATABASE_URL)
+        return PostgresWrapper(conn)
     connection = sqlite3.connect(DATABASE_PATH)
     connection.row_factory = sqlite3.Row
     return connection
@@ -643,20 +677,22 @@ def upload_video():
         video_path = f'videos/{saved_name}'
 
         with get_connection() as connection:
-            cursor = connection.execute(
+            connection.execute(
                 '''
                 INSERT INTO videos (title, description, file, thumbnail)
                 VALUES (?, ?, ?, ?)
                 ''',
                 (title, description, video_path, thumbnail),
             )
+            row = connection.execute('SELECT id FROM videos WHERE file = ?', (video_path,)).fetchone()
+            vid_id = row['id'] if row else 0
             connection.commit()
 
         return jsonify({
             'success': True,
             'message': 'Video uploaded successfully',
             'video': {
-                'id': cursor.lastrowid,
+                'id': vid_id,
                 'title': title,
                 'description': description,
                 'file': url_for('static', filename=video_path, _external=True),
