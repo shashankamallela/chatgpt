@@ -18,11 +18,10 @@ class VerificationSuccessScreen extends StatelessWidget {
 
           padding: const EdgeInsets.all(24),
 
-          child: Column(
-
-            mainAxisAlignment: MainAxisAlignment.center,
-
-            children: [
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
 
               Container(
 
