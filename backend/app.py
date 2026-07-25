@@ -559,7 +559,7 @@ def predict():
             has_model_guess = (
                 bool(model_food and model_food != 'Not food')
                 and (
-                    (model_type == 'deep_learning' and confidence >= 0.75)
+                    (model_type == 'deep_learning' and confidence >= 0.90)
                     or (model_type != 'deep_learning' and (model_accuracy >= 0.10 or confidence >= 0.05))
                 )
             )
@@ -579,7 +579,7 @@ def predict():
                 image_prediction_source = 'model_low_confidence'
                 needs_review = True
                 image_warning = (
-                    'Image identification confidence is low, so this is the closest '
+                    f'Image identification confidence is low ({confidence*100:.1f}%), so this is the closest '
                     'food match. If it is wrong, type the food name to improve the '
                     'risk analysis.'
                 )
@@ -588,7 +588,7 @@ def predict():
                 image_prediction_source = 'needs_review'
                 needs_review = True
                 image_warning = (
-                    'This image does not appear to be food. '
+                    f'This image does not appear to be food (Confidence: {confidence*100:.1f}%). '
                     'Please upload a picture of food, or type the food name for accurate analysis.'
                 )
 
@@ -597,6 +597,7 @@ def predict():
 
             return jsonify({
                 'food': food,
+                'confidence': confidence,
                 'confidence': confidence,
                 'image_accuracy': round(confidence * 100),
                 'top_predictions': prediction['top_predictions'],
