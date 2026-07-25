@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
-
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 class VideoPlayerScreen extends StatefulWidget {
   final Map<String, dynamic> videoData;
 
@@ -22,6 +22,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   VideoPlayerController? videoController;
   ChewieController? chewieController;
+  YoutubePlayerController? ytController;
 
   bool isLiked = false;
   bool isVideoLoading = false;
@@ -45,6 +46,21 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     }
 
     if (_isYoutubeUrl(fileUrl)) {
+      String videoId = '';
+      if (fileUrl.contains('v=')) {
+        videoId = fileUrl.split('v=')[1].split('&')[0];
+      } else if (fileUrl.contains('youtu.be/')) {
+        videoId = fileUrl.split('youtu.be/')[1].split('?')[0];
+      }
+
+      ytController = YoutubePlayerController.fromVideoId(
+        videoId: videoId,
+        autoPlay: false,
+        params: const YoutubePlayerParams(
+          showFullscreenButton: true,
+        ),
+      );
+
       setState(() {
         isYoutubeVideo = true;
         isVideoLoading = false;
@@ -177,6 +193,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   @override
   void dispose() {
+    ytController?.close();
     chewieController?.dispose();
     videoController?.dispose();
     super.dispose();
@@ -228,43 +245,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   }
 
   Widget _buildYoutubeLauncher() {
-    return InkWell(
-      onTap: _openVideoExternally,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            height: 76,
-            width: 76,
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(24),
-            ),
-            child: const Icon(
-              Icons.play_arrow,
-              color: Colors.white,
-              size: 48,
-            ),
-          ),
-          const SizedBox(height: 18),
-          ElevatedButton.icon(
-            onPressed: _openVideoExternally,
-            icon: const Icon(Icons.open_in_new),
-            label: const Text('Open YouTube'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.black,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 12,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-            ),
-          ),
-        ],
-      ),
+    if (ytController == null) {
+      return const SizedBox();
+    }
+    return YoutubePlayer(
+      controller: ytController!,
     );
   }
 
