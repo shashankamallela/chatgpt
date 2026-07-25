@@ -554,12 +554,12 @@ def predict():
             trust_model = (
                 model_accuracy >= 0.25 and confidence >= 0.30
             ) or (
-                model_type == 'deep_learning' and confidence >= 0.85
+                model_type == 'deep_learning' and confidence >= 0.90
             )
             has_model_guess = (
                 bool(model_food and model_food != 'Not food')
                 and (
-                    (model_type == 'deep_learning' and confidence >= 0.40)
+                    (model_type == 'deep_learning' and confidence >= 0.75)
                     or (model_type != 'deep_learning' and (model_accuracy >= 0.10 or confidence >= 0.05))
                 )
             )
