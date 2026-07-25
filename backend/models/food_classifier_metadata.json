@@ -1,5 +1,5 @@
 {
-  "model_type": "mobilenetv2_transfer",
+  "model_type": "efficientnetv2b2_transfer",
   "class_names": [
     "apple_pie",
     "baby_back_ribs",
@@ -104,11 +104,31 @@
     "waffles"
   ],
   "image_size": [
-    128,
-    128
+    260,
+    260
   ],
   "color_mode": "rgb",
   "normalization": "rescale_0_1",
-  "accuracy": 0.2846534550189972,
-  "loss": 2.9742093086242676
+  "accuracy": 0.5321782231330872,
+  "top_5_accuracy": 0.7883663177490234,
+  "loss": 1.8599498271942139,
+  "previous_accuracy": 0.2846534550189972,
+  "accuracy_gain": 0.24752476811408997,
+  "target_accuracy": 0.8,
+  "target_met": false,
+  "training": {
+    "source": "directory",
+    "architecture": "efficientnetv2b2",
+    "epochs": 5,
+    "fine_tune_epochs": 1,
+    "fine_tune_layers": 120,
+    "image_size": [
+      260,
+      260
+    ],
+    "batch_size": 16,
+    "learning_rate": 0.0003,
+    "weights": "imagenet",
+    "validation_split": 0.15
+  }
 }
