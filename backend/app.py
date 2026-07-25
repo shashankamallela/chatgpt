@@ -560,7 +560,7 @@ def predict():
                 bool(model_food and model_food != 'Not food')
                 and (
                     (model_type == 'deep_learning' and confidence >= 0.90)
-                    or (model_type != 'deep_learning' and (model_accuracy >= 0.10 or confidence >= 0.05))
+                    or (model_type != 'deep_learning' and (model_accuracy >= 0.10 and confidence >= 0.15))
                 )
             )
 
