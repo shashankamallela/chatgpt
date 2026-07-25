@@ -557,7 +557,7 @@ def predict():
                 model_type == 'deep_learning' and confidence >= 0.80
             )
             has_model_guess = (
-                bool(model_food and model_food != 'unknown food')
+                bool(model_food and model_food != 'Not food')
                 and (
                     model_type == 'deep_learning'
                     or model_accuracy >= 0.10
@@ -585,12 +585,12 @@ def predict():
                     'risk analysis.'
                 )
             else:
-                analysis_food = 'unknown food'
+                analysis_food = 'Not food'
                 image_prediction_source = 'needs_review'
                 needs_review = True
                 image_warning = (
-                    'Image model confidence is too low for a reliable food name. '
-                    'Please type the food name for accurate analysis.'
+                    'This image does not appear to be food. '
+                    'Please upload a picture of food, or type the food name for accurate analysis.'
                 )
 
             food = analysis_food.replace('_', ' ').title()
