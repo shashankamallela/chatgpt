@@ -173,14 +173,18 @@ class FoodDetectedScreen extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
-                          context.push(
-                            '/risk-analysis',
-                            extra: foodData,
-                          );
+                          if (isNotFood) {
+                            context.pop();
+                          } else {
+                            context.push(
+                              '/risk-analysis',
+                              extra: foodData,
+                            );
+                          }
                         },
-                        child: const Text(
-                          "Predict Risk",
-                          style: TextStyle(
+                        child: Text(
+                          isNotFood ? "Scan Food Image" : "Predict Risk",
+                          style: const TextStyle(
                             fontSize: 22,
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
