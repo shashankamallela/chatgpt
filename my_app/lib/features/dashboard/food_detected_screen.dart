@@ -16,6 +16,8 @@ class FoodDetectedScreen extends StatelessWidget {
         foodData.containsKey('image_accuracy') ? 'Identification' : 'Accuracy';
     final needsReview = foodData['needs_review'] == true;
     final imageWarning = foodData['image_warning']?.toString() ?? '';
+    final isNotFood = foodData['food'] == 'Not Food' || foodData['food'] == 'Unknown Food';
+    final headerTitle = isNotFood ? 'Food Not Detected' : 'Food Detected';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FB),
@@ -46,9 +48,9 @@ class FoodDetectedScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    const Text(
-                      "Food Detected",
-                      style: TextStyle(
+                    Text(
+                      headerTitle,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 38,
                         fontWeight: FontWeight.bold,
@@ -98,34 +100,42 @@ class FoodDetectedScreen extends StatelessWidget {
                                   ),
                           ),
                           const SizedBox(height: 30),
-                          Text(
-                            foodData['food'],
-                            style: const TextStyle(
-                              fontSize: 42,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          Text(
-                            "Risk: ${foodData['risk']}",
-                            style: const TextStyle(
-                              fontSize: 22,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            "Score: ${foodData['score']}",
-                            style: const TextStyle(
-                              fontSize: 22,
-                            ),
-                          ),
-                          if (accuracyText.isNotEmpty) ...[
-                            const SizedBox(height: 10),
+                          if (!isNotFood) ...[
                             Text(
-                              "$accuracyLabel: $accuracyText",
+                              foodData['food'],
+                              style: const TextStyle(
+                                fontSize: 42,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            Text(
+                              "Risk: ${foodData['risk']}",
                               style: const TextStyle(
                                 fontSize: 22,
                               ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              "Score: ${foodData['score']}",
+                              style: const TextStyle(
+                                fontSize: 22,
+                              ),
+                            ),
+                            if (accuracyText.isNotEmpty) ...[
+                              const SizedBox(height: 10),
+                              Text(
+                                "$accuracyLabel: $accuracyText",
+                                style: const TextStyle(
+                                  fontSize: 22,
+                                ),
+                              ),
+                            ],
+                          ] else ...[
+                            const Icon(
+                              Icons.error_outline,
+                              color: Colors.orange,
+                              size: 64,
                             ),
                           ],
                           if (needsReview && imageWarning.isNotEmpty) ...[
