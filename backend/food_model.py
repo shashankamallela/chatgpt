@@ -8,7 +8,7 @@ from PIL import Image
 
 BASE_DIR = Path(__file__).resolve().parent
 MODEL_DIR = BASE_DIR / "models"
-TFLITE_MODEL_PATH = MODEL_DIR / "food_classifier.tflite"
+DEEP_MODEL_PATH = MODEL_DIR / "food_classifier.keras"
 METADATA_PATH = MODEL_DIR / "food_classifier_metadata.json"
 LEGACY_MODEL_PATH = MODEL_DIR / "food_classifier.joblib"
 
@@ -17,30 +17,26 @@ _MODEL_BUNDLE = None
 
 
 def _load_deep_learning_model():
-    if not TFLITE_MODEL_PATH.exists():
-        zip_path = MODEL_DIR / "food_classifier.zip"
+    if not DEEP_MODEL_PATH.exists():
+        zip_path = MODEL_DIR / "food_classifier_keras.zip"
         if zip_path.exists():
             import zipfile
             with zipfile.ZipFile(zip_path, 'r') as zip_ref:
                 zip_ref.extractall(MODEL_DIR)
                 
-    if not TFLITE_MODEL_PATH.exists() or not METADATA_PATH.exists():
+    if not DEEP_MODEL_PATH.exists() or not METADATA_PATH.exists():
         return None
 
     try:
-        import tflite_runtime.interpreter as tflite
-    except ImportError:
-        try:
-            from tensorflow import lite as tflite
-        except ImportError as exc:
-            if LEGACY_MODEL_PATH.exists():
-                return None
-            raise RuntimeError(
-                "tflite-runtime is required for the deep-learning food model. "
-            ) from exc
+        from tensorflow import keras
+    except ImportError as exc:
+        if LEGACY_MODEL_PATH.exists():
+            return None
 
-    interpreter = tflite.Interpreter(model_path=str(TFLITE_MODEL_PATH))
-    interpreter.allocate_tensors()
+        raise RuntimeError(
+            "TensorFlow is required for the deep-learning food model. "
+            "Install backend requirements, then run train_food_model.py."
+        ) from exc
 
     with open(METADATA_PATH, "r", encoding="utf-8") as metadata_file:
         metadata = json.load(metadata_file)
@@ -48,8 +44,8 @@ def _load_deep_learning_model():
     image_size = tuple(metadata.get("image_size", (32, 32)))
 
     return {
-        "kind": "deep_learning_tflite",
-        "model": interpreter,
+        "kind": "deep_learning",
+        "model": keras.models.load_model(DEEP_MODEL_PATH),
         "class_names": metadata["class_names"],
         "image_size": image_size,
         "accuracy": metadata.get("accuracy"),
@@ -83,7 +79,7 @@ def prepare_image(image_file, bundle=None):
     image = Image.open(image_file).convert("RGB").resize((width, height))
     image_array = np.asarray(image, dtype="float32") / 255.0
 
-    if bundle.get("kind") == "deep_learning_tflite":
+    if bundle.get("kind") == "deep_learning":
         return image_array.reshape(1, height, width, 3)
 
     return image_array.reshape(1, -1)
@@ -109,15 +105,8 @@ def _normalize_probabilities(values):
 def _predict_probabilities(bundle, features):
     model = bundle["model"]
 
-    if bundle.get("kind") == "deep_learning_tflite":
-        interpreter = bundle["model"]
-        input_details = interpreter.get_input_details()
-        output_details = interpreter.get_output_details()
-        
-        interpreter.set_tensor(input_details[0]['index'], features)
-        interpreter.invoke()
-        output_data = interpreter.get_tensor(output_details[0]['index'])
-        return _normalize_probabilities(output_data[0])
+    if bundle.get("kind") == "deep_learning":
+        return _normalize_probabilities(model.predict(features, verbose=0)[0])
 
     return _normalize_probabilities(model.predict_proba(features)[0])
 
