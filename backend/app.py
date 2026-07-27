@@ -551,16 +551,18 @@ def predict():
             confidence = float(prediction.get('confidence') or 0)
             model_type = prediction.get('model_type')
             filename_hint = detect_food_hint(original_name)
+            is_deep_learning = model_type and model_type.startswith('deep_learning')
+
             trust_model = (
                 model_accuracy >= 0.25 and confidence >= 0.30
             ) or (
-                model_type == 'deep_learning' and confidence >= 0.90
+                is_deep_learning and confidence >= 0.90
             )
             has_model_guess = (
                 bool(model_food and model_food != 'Not food')
                 and (
-                    (model_type == 'deep_learning' and confidence >= 0.90)
-                    or (model_type != 'deep_learning' and (model_accuracy >= 0.10 and confidence >= 0.65))
+                    (is_deep_learning and confidence >= 0.90)
+                    or (not is_deep_learning and (model_accuracy >= 0.10 and confidence >= 0.65))
                 )
             )
 
