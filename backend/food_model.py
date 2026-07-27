@@ -17,6 +17,13 @@ _MODEL_BUNDLE = None
 
 
 def _load_deep_learning_model():
+    if not TFLITE_MODEL_PATH.exists():
+        zip_path = MODEL_DIR / "food_classifier.zip"
+        if zip_path.exists():
+            import zipfile
+            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                zip_ref.extractall(MODEL_DIR)
+                
     if not TFLITE_MODEL_PATH.exists() or not METADATA_PATH.exists():
         return None
 
