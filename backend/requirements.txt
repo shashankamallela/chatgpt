@@ -9,4 +9,4 @@ numpy
 Pillow
 scikit-learn
 psycopg2-binary==2.9.9
-tensorflow-cpu
+onnxruntime

@@ -8,7 +8,7 @@ from PIL import Image
 
 BASE_DIR = Path(__file__).resolve().parent
 MODEL_DIR = BASE_DIR / "models"
-DEEP_MODEL_PATH = MODEL_DIR / "food_classifier.keras"
+ONNX_MODEL_PATH = MODEL_DIR / "food_classifier.onnx"
 METADATA_PATH = MODEL_DIR / "food_classifier_metadata.json"
 LEGACY_MODEL_PATH = MODEL_DIR / "food_classifier.joblib"
 
@@ -17,25 +17,23 @@ _MODEL_BUNDLE = None
 
 
 def _load_deep_learning_model():
-    if not DEEP_MODEL_PATH.exists():
-        zip_path = MODEL_DIR / "food_classifier_keras.zip"
+    if not ONNX_MODEL_PATH.exists():
+        zip_path = MODEL_DIR / "food_classifier_onnx.zip"
         if zip_path.exists():
             import zipfile
             with zipfile.ZipFile(zip_path, 'r') as zip_ref:
                 zip_ref.extractall(MODEL_DIR)
                 
-    if not DEEP_MODEL_PATH.exists() or not METADATA_PATH.exists():
+    if not ONNX_MODEL_PATH.exists() or not METADATA_PATH.exists():
         return None
 
     try:
-        from tensorflow import keras
+        import onnxruntime as ort
     except ImportError as exc:
         if LEGACY_MODEL_PATH.exists():
             return None
-
         raise RuntimeError(
-            "TensorFlow is required for the deep-learning food model. "
-            "Install backend requirements, then run train_food_model.py."
+            "onnxruntime is required for the deep-learning food model."
         ) from exc
 
     with open(METADATA_PATH, "r", encoding="utf-8") as metadata_file:
@@ -43,12 +41,19 @@ def _load_deep_learning_model():
 
     image_size = tuple(metadata.get("image_size", (32, 32)))
 
+    try:
+        session = ort.InferenceSession(str(ONNX_MODEL_PATH))
+    except Exception as e:
+        print(f"Failed to load ONNX model: {e}")
+        return None
+
     return {
-        "kind": "deep_learning",
-        "model": keras.models.load_model(DEEP_MODEL_PATH),
+        "kind": "deep_learning_onnx",
+        "model": session,
         "class_names": metadata["class_names"],
         "image_size": image_size,
         "accuracy": metadata.get("accuracy"),
+        "top_5_accuracy": metadata.get("top_5_accuracy"),
     }
 
 
@@ -79,7 +84,7 @@ def prepare_image(image_file, bundle=None):
     image = Image.open(image_file).convert("RGB").resize((width, height))
     image_array = np.asarray(image, dtype="float32") / 255.0
 
-    if bundle.get("kind") == "deep_learning":
+    if bundle.get("kind") == "deep_learning_onnx":
         return image_array.reshape(1, height, width, 3)
 
     return image_array.reshape(1, -1)
@@ -105,8 +110,13 @@ def _normalize_probabilities(values):
 def _predict_probabilities(bundle, features):
     model = bundle["model"]
 
-    if bundle.get("kind") == "deep_learning":
-        return _normalize_probabilities(model.predict(features, verbose=0)[0])
+    if bundle.get("kind") == "deep_learning_onnx":
+        session = bundle["model"]
+        input_name = session.get_inputs()[0].name
+        output_name = session.get_outputs()[0].name
+        
+        output_data = session.run([output_name], {input_name: features})
+        return _normalize_probabilities(output_data[0][0])
 
     return _normalize_probabilities(model.predict_proba(features)[0])
 
